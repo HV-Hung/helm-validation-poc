@@ -36,12 +36,12 @@ jobs:
           helm template my-release myapp -f myapp/values.yaml \
           | kubectl apply --dry-run=server -f -
 
-      - name: Baseline install from base branch
-        run: |
-          kubectl create ns poc || true
-          helm dependency build base/myapp || true
-          helm install my-release base/myapp -n poc \
-            -f base/myapp/values.yaml --wait --timeout 5m
+      # - name: Baseline install from base branch
+      #   run: |
+      #     kubectl create ns poc || true
+      #     helm dependency build base/myapp || true
+      #     helm install my-release base/myapp -n poc \
+      #       -f base/myapp/values.yaml --wait --timeout 5m
 
       - name: Helm diff (plan)
         id: plan
