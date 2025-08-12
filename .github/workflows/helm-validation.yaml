@@ -5,6 +5,8 @@ on:
 jobs:
   helm-validate:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout PR (head)
         uses: actions/checkout@v4
