@@ -39,7 +39,6 @@ jobs:
       - name: Baseline install from base branch
         run: |
           kubectl create ns poc || true
-          helm dependency build base/myapp || true
           helm install my-release base/myapp -n poc \
             -f base/myapp/values.yaml --wait --timeout 5m
 
@@ -47,7 +46,6 @@ jobs:
         id: plan
         shell: bash
         run: |
-          helm dependency build myapp || true
           set +e
           helm diff upgrade my-release myapp \
             -n poc -f myapp/values.yaml --detailed-exitcode \
