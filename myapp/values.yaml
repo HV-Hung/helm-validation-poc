@@ -25,7 +25,7 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
-secret:
-  enabled: true
-  name: myapp-secret
-  data: {}
+# secret:
+#   enabled: true
+#   name: myapp-secret
+#   data: {}

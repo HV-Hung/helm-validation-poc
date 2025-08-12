@@ -5,6 +5,8 @@ on:
 jobs:
   helm-validate:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout PR (head)
         uses: actions/checkout@v4
@@ -27,28 +29,28 @@ jobs:
         run: helm plugin install https://github.com/databus23/helm-diff
 
       - name: Lint chart
-        run: helm lint charts/my-chart -f charts/my-chart/values.yaml --strict
+        run: helm lint myapp -f myapp/values.yaml --strict
 
       - name: Server-side dry-run validation
         run: |
-          helm template my-release charts/my-chart -f charts/my-chart/values.yaml \
+          helm template my-release myapp -f myapp/values.yaml \
           | kubectl apply --dry-run=server -f -
 
       - name: Baseline install from base branch
         run: |
           kubectl create ns poc || true
-          helm dependency build base/charts/my-chart || true
-          helm install my-release base/charts/my-chart -n poc \
-            -f base/charts/my-chart/values.yaml --wait --timeout 5m
+          helm dependency build base/myapp || true
+          helm install my-release base/myapp -n poc \
+            -f base/myapp/values.yaml --wait --timeout 5m
 
       - name: Helm diff (plan)
         id: plan
         shell: bash
         run: |
-          helm dependency build charts/my-chart || true
+          helm dependency build myapp || true
           set +e
-          helm diff upgrade my-release charts/my-chart \
-            -n poc -f charts/my-chart/values.yaml --detailed-exitcode \
+          helm diff upgrade my-release myapp \
+            -n poc -f myapp/values.yaml --detailed-exitcode \
             | tee /tmp/helm.diff
           ec=${PIPESTATUS[0]}
           # Build markdown comment
