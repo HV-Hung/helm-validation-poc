@@ -23,6 +23,3 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          # envFrom:
-          #   - secretRef:
-          #       name: {{ .Values.secret.name }}
