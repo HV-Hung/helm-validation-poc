@@ -55,9 +55,12 @@ jobs:
           if [ ! -s helm-diff-plain.md ]; then
             echo "✅ No Helm changes detected."
           else
-            echo "```diff" > helm-diff.md
+            echo "<details>" > helm-diff.md
+            echo "<summary>Helm Diff Output</summary>" >> helm-diff.md
+            echo "" >> helm-diff.md
+            echo "\`\`\`diff" >> helm-diff.md
             cat helm-diff-plain.md >> helm-diff.md
-            echo "```" >> helm-diff.md
+            echo "\`\`\`" >> helm-diff.md
           fi
 
       - name: Post sticky PR comment
