@@ -48,7 +48,7 @@ jobs:
         run: |
           helm diff upgrade my-release myapp \
             -n poc -f myapp/values.yaml --allow-unreleased --collor \
-            | tee /tmp/helm.diff\
+            | tee /tmp/helm.diff \
             | sed 's/\x1b\[[0-9;]*m//g' > helm-diff-plain.md
 
           # If no changes, log a message
