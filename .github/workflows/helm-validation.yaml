@@ -47,8 +47,9 @@ jobs:
         shell: bash
         run: |
           helm diff upgrade my-release myapp \
-            -n poc -f myapp/values.yaml --allow-unreleased --color \
+            -n poc -f myapp/values.yaml --allow-unreleased\
             | tee /tmp/helm.diff
+            
 
           if [ ! -s /tmp/helm.diff ]; then
             echo "✅ No Helm changes detected."
