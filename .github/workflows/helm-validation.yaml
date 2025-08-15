@@ -47,7 +47,7 @@ jobs:
         shell: bash
         run: |
           helm diff upgrade my-release myapp \
-            -n poc -f myapp/values.yaml --detailed-exitcode --color \
+            -n poc -f myapp/values.yaml --allow-unreleased --color \
             | tee /tmp/helm.diff
 
           if [ ! -s /tmp/helm.diff ]; then
