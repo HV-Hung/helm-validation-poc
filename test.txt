@@ -1,0 +1,60 @@
+---
+# Source: myapp/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myrelease-myapp
+  labels:
+
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: myrelease
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: "myapp-0.1.0"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: myrelease
+---
+# Source: myapp/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myrelease-myapp
+  labels:
+
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: myrelease
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: "myapp-0.1.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: myapp
+      app.kubernetes.io/instance: myrelease
+  template:
+    metadata:
+      labels:
+
+        app.kubernetes.io/name: myapp
+        app.kubernetes.io/instance: myrelease
+        app.kubernetes.io/version: "1.0.0"
+        app.kubernetes.io/managed-by: Helm
+        helm.sh/chart: "myapp-0.1.0"
+    spec:
+      containers:
+        - name: myapp
+          image: "nginx:1.27"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
