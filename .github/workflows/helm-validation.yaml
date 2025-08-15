@@ -48,13 +48,13 @@ jobs:
         run: |
           helm diff upgrade my-release myapp \
             -n poc -f myapp/values.yaml --allow-unreleased --color \
-            | tee /tmp/helm.diff \
-            | sed 's/\x1b\[[0-9;]*m//g' > helm-diff-plain.md
+            | tee /tmp/helm.diff
 
           # If no changes, log a message
-          if [ ! -s helm-diff-plain.md ]; then
+          if [ ! -s /tmp/helm.diff ]; then
             echo "✅ No Helm changes detected."
           else
+            cat /tmp/helm.diff | sed 's/\x1b\[[0-9;]*m//g' > helm-diff-plain.md
             echo "<details>" > helm-diff.md
             echo "<summary>Helm Diff Output</summary>" >> helm-diff.md
             echo "" >> helm-diff.md
