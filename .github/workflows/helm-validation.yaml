@@ -46,35 +46,25 @@ jobs:
         id: plan
         shell: bash
         run: |
-          set +e
           helm diff upgrade my-release myapp \
-            -n poc -f myapp/values.yaml --detailed-exitcode \
+            -n poc -f myapp/values.yaml --allow-unreleased --color \
             | tee /tmp/helm.diff
-          ec=${PIPESTATUS[0]}
-          # Build markdown comment
-          {
-            echo "### Helm plan (Kind POC)"
-            if [ $ec -eq 0 ]; then
-              echo "✅ No changes."
-            elif [ $ec -eq 2 ]; then
-              echo "⚠️ Changes detected."
-              echo ""
-              echo "<details><summary>Show diff</summary>"
-              echo
-              echo '```diff'
-              # GitHub comment max ~65k; keep it safe
-              head -c 60000 /tmp/helm.diff
-              echo
-              echo '```'
-              echo "</details>"
-            else
-              echo "❌ \`helm diff\` failed with exit code $ec"
-            fi
-          } > /tmp/comment.md
-          echo "exitcode=$ec" >> $GITHUB_OUTPUT
+
+          # If no changes, log a message
+          if [ ! -s /tmp/helm.diff ]; then
+            echo "✅ No Helm changes detected."
+          else
+            cat /tmp/helm.diff | sed 's/\x1b\[[0-9;]*m//g' > helm-diff-plain.md
+            echo "<details>" > helm-diff.md
+            echo "<summary>Helm Diff Output</summary>" >> helm-diff.md
+            echo "" >> helm-diff.md
+            echo "\`\`\`diff" >> helm-diff.md
+            cat helm-diff-plain.md >> helm-diff.md
+            echo "\`\`\`" >> helm-diff.md
+          fi
 
       - name: Post sticky PR comment
         if: github.event_name == 'pull_request'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          path: /tmp/comment.md
+          path: helm-diff.md
