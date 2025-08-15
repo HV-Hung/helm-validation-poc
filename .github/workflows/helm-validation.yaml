@@ -47,16 +47,21 @@ jobs:
         shell: bash
         run: |
           helm diff upgrade my-release myapp \
-            -n poc -f myapp/values.yaml --allow-unreleased\
-            | tee /tmp/helm.diff
-            
+            -n poc -f myapp/values.yaml --allow-unreleased --collor \
+            | tee /tmp/helm.diff\
+            | sed 's/\x1b\[[0-9;]*m//g' > helm-diff-plain.md
 
-          if [ ! -s /tmp/helm.diff ]; then
+          # If no changes, log a message
+          if [ ! -s helm-diff-plain.md ]; then
             echo "✅ No Helm changes detected."
+          else
+            echo "```diff" > helm-diff.md
+            cat helm-diff-plain.md >> helm-diff.md
+            echo "```" >> helm-diff.md
           fi
 
       - name: Post sticky PR comment
         if: github.event_name == 'pull_request'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          path: /tmp/helm.diff
+          path: helm-diff.md
